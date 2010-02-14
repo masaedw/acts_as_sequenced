@@ -8,7 +8,9 @@ end
 class Response < ActiveRecord::Base
   belongs_to :two_ch_thread
   acts_as_sequenced :column => :response_no, :scope => :two_ch_thread
-  acts_as_paranoid
+  if self.respond_to? :acts_as_paranoid
+    acts_as_paranoid
+  end
 end
 
 class ActsAsSequencedTest < ActiveSupport::TestCase
@@ -52,19 +54,21 @@ class ActsAsSequencedTest < ActiveSupport::TestCase
     assert_equal 3, th4.th_no
   end
 
-  test "should be numbered even when deleted objects exist (with logical delete)" do
-    th = TwoChThread.create!(:title => "[rails] acts_as_sequenced [plugin]")
+  if Response.respond_to?(:paranoid?) && Response.paranoid?
+    test "should be numbered even when deleted objects exist (with logical delete)" do
+      th = TwoChThread.create!(:title => "[rails] acts_as_sequenced [plugin]")
 
-    r1 = th.responses.create!(:content => "Have you used it?")
-    assert_equal 1, r1.response_no
-    r1.destroy
-    r2 = th.responses.create!(:content => "It's useful.")
-    assert_equal 2, r2.response_no
-    r3 = th.responses.create!(:content => "OMG!!!! >>1 is already deleted! What did >>1 mean?")
-    assert_equal 3, r3.response_no
-    r2.destroy
-    r4 = th.responses.create!(:content => "aboon aboon aboon aboon")
-    assert_equal 4, r4.response_no
+      r1 = th.responses.create!(:content => "Have you used it?")
+      assert_equal 1, r1.response_no
+      r1.destroy
+      r2 = th.responses.create!(:content => "It's useful.")
+      assert_equal 2, r2.response_no
+      r3 = th.responses.create!(:content => "OMG!!!! >>1 is already deleted! What did >>1 mean?")
+      assert_equal 3, r3.response_no
+      r2.destroy
+      r4 = th.responses.create!(:content => "aboon aboon aboon aboon")
+      assert_equal 4, r4.response_no
+    end
   end
 
 protected

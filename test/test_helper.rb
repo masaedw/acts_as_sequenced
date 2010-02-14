@@ -1,44 +1,39 @@
-$:.unshift(File.dirname(__FILE__) + '/../lib')
-
-require 'test/unit'
+require 'pathname'
 require 'rubygems'
+require 'test/unit'
+
+DIR = Pathname.new(File.dirname(__FILE__))
+
 if ENV['RAILS'].nil?
-  require File.expand_path(File.join(File.dirname(__FILE__), '../../../../config/environment.rb'))
-else
-  # specific rails version targeted
-  # load activerecord and plugin manually
-  gem 'activerecord', "=#{ENV['RAILS']}"
+  require (DIR + '../../../../config/environment.rb').expand_path
+  require 'active_support'
+  require 'active_support/test_case'
   require 'active_record'
+  require 'active_record/fixtures'
+else
+  gem 'activerecord', "=#{ENV['RAILS']}"
+  gem 'activesupport', "=#{ENV['RAILS']}"
+  require 'active_support'
+  require 'active_support/test_case'
+  require 'active_record'
+  require 'active_record/fixtures'
   $LOAD_PATH << File.join(File.dirname(__FILE__), '..', 'lib')
   Dir["#{$LOAD_PATH.last}/**/*.rb"].each do |path|
     require path[$LOAD_PATH.last.size + 1..-1]
   end
-  require File.join(File.dirname(__FILE__), '..', 'init.rb')
+  require DIR + '..' + 'init.rb'
 end
-require 'active_record/fixtures'
 
-config = YAML::load(IO.read(File.dirname(__FILE__) + '/database.yml'))
-# do this so fixtures will load
+config = YAML::load(IO.read(DIR + 'database.yml'))
 ActiveRecord::Base.configurations.update config
-ActiveRecord::Base.logger = Logger.new(File.dirname(__FILE__) + "/debug.log")
-ActiveRecord::Base.establish_connection(config[ENV['DB'] || 'sqlite3'])
+ActiveRecord::Base.logger = Logger.new(DIR + "debug.log")
+ActiveRecord::Base.establish_connection(config[ENV['DB'] || 'sqlite3_memory'])
 
-load(File.dirname(__FILE__) + "/schema.rb")
+load(DIR + "schema.rb")
 
-class Test::Unit::TestCase #:nodoc:
-  def create_fixtures(*table_names)
-    if block_given?
-      Fixtures.create_fixtures(Test::Unit::TestCase.fixture_path, table_names) { yield }
-    else
-      Fixtures.create_fixtures(Test::Unit::TestCase.fixture_path, table_names)
-    end
-  end
-
-  # Turn off transactional fixtures if you're working with MyISAM tables in MySQL
+class ActiveSupport::TestCase #:nodoc:
+  include ActiveRecord::TestFixtures
   self.use_transactional_fixtures = true
-
-  # Instantiated fixtures are slow, but give you @david where you otherwise would need people(:david)
-  self.use_instantiated_fixtures  = false
-
-  # Add more helper methods to be used by all tests here...
+  self.use_instantiated_fixtures = false
+  self.fixture_path = DIR + "fixtures"
 end
