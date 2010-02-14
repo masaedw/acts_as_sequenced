@@ -25,9 +25,6 @@ ActiveRecord::Base.establish_connection(config[ENV['DB'] || 'sqlite3'])
 
 load(File.dirname(__FILE__) + "/schema.rb")
 
-Test::Unit::TestCase.fixture_path = File.dirname(__FILE__) + "/fixtures/"
-$LOAD_PATH.unshift(Test::Unit::TestCase.fixture_path)
-
 class Test::Unit::TestCase #:nodoc:
   def create_fixtures(*table_names)
     if block_given?
