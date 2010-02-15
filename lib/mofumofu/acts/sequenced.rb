@@ -47,7 +47,7 @@ module Mofumofu
         end
 
         def assign_next_number_in_sequence
-          if self.class.methods.include?('paranoid?') && self.class.paranoid?
+          if self.class.respond_to?(:paranoid?) && self.class.paranoid?
             max = self.class.calculate_with_deleted(:max, position_column, :conditions => scope_condition)
           else
             max = self.class.maximum(position_column, :conditions => scope_condition)
