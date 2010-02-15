@@ -29,10 +29,6 @@ module Mofumofu
       end
 
       module InstanceMethods
-        def self.included(base) # :nodoc:
-          base.extend ClassMethods
-        end
-
         def scope_condition
           if self.class.sequenced_scope.is_a?(Symbol)
             scope = self.class.sequenced_scope
