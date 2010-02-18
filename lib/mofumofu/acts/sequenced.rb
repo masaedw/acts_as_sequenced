@@ -56,7 +56,7 @@ module Mofumofu
           else
             max = self.class.maximum(position_column, :conditions => scope_condition)
           end
-          self[position_column] = (max ? max : 0  ) + 1
+          self[position_column] = (max ? max : 0).succ
         end
 
       end

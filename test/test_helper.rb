@@ -17,7 +17,7 @@ else
   require 'active_support/test_case'
   require 'active_record'
   require 'active_record/fixtures'
-  $LOAD_PATH << File.join(File.dirname(__FILE__), '..', 'lib')
+  $LOAD_PATH << DIR.join('..', 'lib')
   Dir["#{$LOAD_PATH.last}/**/*.rb"].each do |path|
     require path[$LOAD_PATH.last.size + 1..-1]
   end
