@@ -13,6 +13,9 @@ class Response < ActiveRecord::Base
   end
 end
 
+class NonSequenced < ActiveRecord::Base
+end
+
 class ActsAsSequencedTest < ActiveSupport::TestCase
   test "should be numbered" do
     th1 = TwoChThread.create!(:title => "[rails] acts_as_sequenced [plugin]")
@@ -69,6 +72,11 @@ class ActsAsSequencedTest < ActiveSupport::TestCase
       r4 = th.responses.create!(:content => "aboon aboon aboon aboon")
       assert_equal 4, r4.response_no
     end
+  end
+
+  test "should give sequenced status" do
+    assert TwoChThread.sequenced?
+    assert !NonSequenced.sequenced?
   end
 
 protected

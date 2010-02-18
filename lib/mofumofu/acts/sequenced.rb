@@ -26,6 +26,10 @@ module Mofumofu
           include InstanceMethods
           before_create  :assign_next_number_in_sequence
         end
+
+        def sequenced?
+          self.included_modules.include?(InstanceMethods)
+        end
       end
 
       module InstanceMethods
